@@ -84,6 +84,22 @@ pip install -r requirements.txt
 5. **Embeddings** — pretrained ArcFace (`buffalo_l`), 512-d.
 6. **Evaluation** — verification metrics, overall and per pose-bin pair.
 7. **Visualization** — UMAP/t-SNE of embeddings by identity and pose.
+8. **Retrieval** — `python src/retrieval.py`: FAISS top-1/top-5, same-pose pool
+   and a cross-pose (frontal-only gallery) variant.
+
+## Demo
+
+An interactive Gradio app compares two uploaded photos and reports whether they
+are the same person, using the cosine-similarity threshold (0.44) frozen from
+the validation split in Step 6.
+
+```bash
+python app.py
+```
+
+Then open the printed local URL. Each photo is detected + aligned, embedded with
+ArcFace, and the two embeddings are compared by cosine similarity; the result
+shows the verdict, the score, and its margin to the threshold.
 
 ## Results
 
