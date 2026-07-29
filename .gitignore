@@ -18,6 +18,9 @@ env/
 # Notebooks
 .ipynb_checkpoints/
 
+# Verbose console run logs (tqdm captures); CSV/plot deliverables in results/ are kept
+results/*_run.log
+
 # OS / editor
 .DS_Store
 Thumbs.db
