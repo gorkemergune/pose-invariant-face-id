@@ -13,7 +13,7 @@ Each image is binned by absolute yaw:
     half-profile 20 <= |yaw| <= 60 deg
     profile      |yaw| > 60 deg
 
-Output: ``data/processed/pose_labels.csv``.
+Output: ``results/pose_labels.csv``.
 
 Usage:
     python src/pose_estimation.py
@@ -45,7 +45,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--out",
         type=Path,
-        default=PROJECT_ROOT / "data" / "processed" / "pose_labels.csv",
+        default=PROJECT_ROOT / "results" / "pose_labels.csv",
     )
     p.add_argument("--det-size", type=int, default=640)
     p.add_argument("--det-thresh", type=float, default=0.3)
