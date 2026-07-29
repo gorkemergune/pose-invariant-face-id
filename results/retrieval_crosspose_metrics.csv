@@ -1,0 +1,4 @@
+scope,n_queries,top1_acc,top5_acc
+half-profile,115,1.0,1.0
+profile,40,1.0,1.0
+all-nonfrontal,155,1.0,1.0
