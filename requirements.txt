@@ -1,0 +1,18 @@
+# Core deep learning
+torch
+torchvision
+
+# Face detection / recognition (RetinaFace + ArcFace via InsightFace)
+insightface
+onnxruntime            # CPU inference backend for InsightFace models
+opencv-python
+
+# Retrieval / metrics / dimensionality reduction
+faiss-cpu
+scikit-learn
+umap-learn
+
+# Plotting / progress / demo
+matplotlib
+gradio
+tqdm
