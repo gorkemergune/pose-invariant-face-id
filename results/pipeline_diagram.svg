@@ -1,78 +1,127 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 250" font-family="Segoe UI, Arial, sans-serif">
-  <!-- backdrop -->
-  <rect x="6" y="6" width="1148" height="238" rx="16" fill="#f7f8fa" stroke="#e5e7eb"/>
-  <text x="28" y="34" fill="#0f172a" font-size="16" font-weight="700">Pose-Invariant Face Verification — pipeline</text>
+<svg viewBox="0 0 1400 640" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4A5568"/>
+    </marker>
 
-  <!-- ===== Stage 1: FEI images ===== -->
-  <rect x="28" y="70" width="190" height="150" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
-  <text x="123" y="96" fill="#0f172a" font-size="14" font-weight="700" text-anchor="middle">FEI images</text>
-  <!-- profile face @70,140 -->
-  <circle cx="70" cy="140" r="14" fill="#e8ecf3" stroke="#64748b" stroke-width="1.5"/>
-  <circle cx="76" cy="137" r="1.7" fill="#334155"/>
-  <path d="M59,140 l-4,3 l4,3 z" fill="#334155"/>
-  <path d="M72,147 Q76,149 79,146" fill="none" stroke="#334155" stroke-width="1.3"/>
-  <!-- half face @123,140 -->
-  <circle cx="123" cy="140" r="14" fill="#e8ecf3" stroke="#64748b" stroke-width="1.5"/>
-  <circle cx="123" cy="137" r="1.7" fill="#334155"/>
-  <circle cx="130" cy="137" r="1.7" fill="#334155"/>
-  <path d="M117,139 l-3,3 l3,2 z" fill="#334155"/>
-  <path d="M122,146 Q126,149 129,146" fill="none" stroke="#334155" stroke-width="1.3"/>
-  <!-- frontal face @176,140 -->
-  <circle cx="176" cy="140" r="14" fill="#e8ecf3" stroke="#64748b" stroke-width="1.5"/>
-  <circle cx="171" cy="137" r="1.7" fill="#334155"/>
-  <circle cx="181" cy="137" r="1.7" fill="#334155"/>
-  <path d="M172,146 Q176,149 180,146" fill="none" stroke="#334155" stroke-width="1.3"/>
-  <text x="123" y="190" fill="#475569" font-size="11" text-anchor="middle">200 subjects × 14 poses</text>
-  <text x="123" y="206" fill="#475569" font-size="11" text-anchor="middle">= 2800 images</text>
+    <g id="faceFrontal">
+      <circle cx="0" cy="0" r="34" fill="#F6D8BA" stroke="#33393F" stroke-width="2.5"/>
+      <path d="M-30,-10 C-30,-34 30,-34 30,-10" fill="none" stroke="#33393F" stroke-width="2.5"/>
+      <circle cx="-12" cy="-4" r="3.5" fill="#33393F"/>
+      <circle cx="12" cy="-4" r="3.5" fill="#33393F"/>
+      <path d="M0,-2 L-3,11 L3,11" fill="none" stroke="#33393F" stroke-width="2"/>
+      <path d="M-11,17 Q0,23 11,17" fill="none" stroke="#33393F" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
 
-  <!-- ===== Stage 2: Detect + Align ===== -->
-  <rect x="270" y="70" width="190" height="150" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
-  <text x="365" y="96" fill="#0f172a" font-size="14" font-weight="700" text-anchor="middle">Detect + Align</text>
-  <rect x="343" y="118" width="44" height="44" rx="4" fill="none" stroke="#4c72b0" stroke-width="1.5" stroke-dasharray="4 3"/>
-  <circle cx="365" cy="140" r="14" fill="#e8ecf3" stroke="#64748b" stroke-width="1.5"/>
-  <circle cx="360" cy="137" r="1.7" fill="#334155"/>
-  <circle cx="370" cy="137" r="1.7" fill="#334155"/>
-  <path d="M361,146 Q365,149 369,146" fill="none" stroke="#334155" stroke-width="1.3"/>
-  <text x="365" y="190" fill="#475569" font-size="11" text-anchor="middle">RetinaFace · 112×112</text>
-  <text x="365" y="206" fill="#475569" font-size="11" text-anchor="middle">2782 aligned crops</text>
+    <g id="faceProfile">
+      <path d="M-18,-30 Q6,-33 16,-14 Q23,-7 29,-1 Q23,5 18,7 Q23,11 20,15 Q14,19 9,19 Q4,29 -11,33 Q-29,30 -31,9 Q-33,-16 -18,-30 Z" fill="#F6D8BA" stroke="#33393F" stroke-width="2.5"/>
+      <circle cx="-2" cy="-9" r="3" fill="#33393F"/>
+      <path d="M-27,1 Q-35,3 -27,11" fill="none" stroke="#33393F" stroke-width="2"/>
+      <path d="M-18,-28 Q-28,-18 -29,2" fill="none" stroke="#33393F" stroke-width="2.5"/>
+    </g>
+  </defs>
 
-  <!-- ===== Stage 3: ArcFace embed ===== -->
-  <rect x="512" y="70" width="190" height="150" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
-  <text x="607" y="96" fill="#0f172a" font-size="14" font-weight="700" text-anchor="middle">ArcFace embed</text>
-  <rect x="565" y="126" width="10" height="10" rx="2" fill="#4c72b0"/>
-  <rect x="579" y="126" width="10" height="10" rx="2" fill="#7aa0cc"/>
-  <rect x="593" y="126" width="10" height="10" rx="2" fill="#4c72b0"/>
-  <rect x="607" y="126" width="10" height="10" rx="2" fill="#7aa0cc"/>
-  <rect x="621" y="126" width="10" height="10" rx="2" fill="#4c72b0"/>
-  <rect x="635" y="126" width="10" height="10" rx="2" fill="#7aa0cc"/>
-  <text x="607" y="164" fill="#475569" font-size="11" text-anchor="middle">512-d vector</text>
-  <text x="607" y="190" fill="#475569" font-size="11" text-anchor="middle">buffalo_l · w600k_r50</text>
-  <text x="607" y="206" fill="#475569" font-size="11" text-anchor="middle">cosine similarity</text>
+  <rect x="0" y="0" width="1400" height="640" fill="#FFFFFF"/>
 
-  <!-- ===== Stage 4: Split + Evaluate ===== -->
-  <rect x="754" y="70" width="190" height="150" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
-  <text x="849" y="96" fill="#0f172a" font-size="14" font-weight="700" text-anchor="middle">Split + Evaluate</text>
-  <polyline points="806,158 806,120 845,120 845,134 884,134 884,114" fill="none" stroke="#4c72b0" stroke-width="2"/>
-  <circle cx="806" cy="158" r="2.5" fill="#4c72b0"/>
-  <text x="849" y="182" fill="#475569" font-size="11" text-anchor="middle">identity-disjoint 160/20/20</text>
-  <text x="849" y="198" fill="#475569" font-size="11" text-anchor="middle">ROC · EER · TAR@FAR</text>
-  <text x="849" y="214" fill="#475569" font-size="11" text-anchor="middle">by pose-bin</text>
+  <text x="700" y="34" text-anchor="middle" font-size="24" font-weight="700" fill="#1A202C">Face Verification Pipeline</text>
+  <text x="700" y="56" text-anchor="middle" font-size="13" font-style="italic" fill="#718096">Illustrative example (hand-drawn icons, not dataset images) — values from a verified demo run</text>
 
-  <!-- ===== Stage 5: Result / Demo ===== -->
-  <rect x="996" y="70" width="140" height="150" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
-  <text x="1066" y="96" fill="#0f172a" font-size="14" font-weight="700" text-anchor="middle">Result / Demo</text>
-  <circle cx="1066" cy="140" r="20" fill="#e6f4ea" stroke="#2e7d47" stroke-width="2"/>
-  <path d="M1056,140 l7,7 l13,-15" fill="none" stroke="#2e7d47" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="1066" y="190" fill="#475569" font-size="11" text-anchor="middle">"same person?"</text>
-  <text x="1066" y="206" fill="#475569" font-size="11" text-anchor="middle">Gradio · UMAP · FAISS</text>
+  <!-- ================= ROW A (frontal) ================= -->
+  <text x="110" y="95" text-anchor="middle" font-size="13" fill="#4A5568">Query Photo A</text>
+  <use href="#faceFrontal" x="110" y="150"/>
+  <text x="110" y="205" text-anchor="middle" font-size="12" fill="#718096">(frontal)</text>
 
-  <!-- ===== arrows ===== -->
-  <line x1="222" y1="145" x2="260" y2="145" stroke="#94a3b8" stroke-width="2"/>
-  <polygon points="260,141 267,145 260,149" fill="#94a3b8"/>
-  <line x1="464" y1="145" x2="502" y2="145" stroke="#94a3b8" stroke-width="2"/>
-  <polygon points="502,141 509,145 502,149" fill="#94a3b8"/>
-  <line x1="706" y1="145" x2="744" y2="145" stroke="#94a3b8" stroke-width="2"/>
-  <polygon points="744,141 751,145 744,149" fill="#94a3b8"/>
-  <line x1="948" y1="145" x2="986" y2="145" stroke="#94a3b8" stroke-width="2"/>
-  <polygon points="986,141 993,145 986,149" fill="#94a3b8"/>
+  <line x1="152" y1="150" x2="290" y2="150" stroke="#4A5568" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <rect x="300" y="110" width="90" height="90" rx="10" fill="#FFF7ED" stroke="#DD6B20" stroke-width="2" stroke-dasharray="6,4"/>
+  <use href="#faceFrontal" transform="translate(345,155) scale(0.55)"/>
+  <path d="M305,120 L305,113 L312,113 M383,113 L390,113 L390,120 M305,190 L305,197 L312,197 M383,197 L390,197 L390,190" stroke="#DD6B20" stroke-width="2.5" fill="none"/>
+  <text x="345" y="225" text-anchor="middle" font-size="12" fill="#4A5568">1. Face Detection</text>
+
+  <line x1="400" y1="150" x2="530" y2="150" stroke="#4A5568" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <use href="#faceFrontal" transform="translate(575,150) scale(0.6)"/>
+  <circle cx="568" cy="148" r="2.8" fill="#E53E3E"/>
+  <circle cx="582" cy="148" r="2.8" fill="#E53E3E"/>
+  <circle cx="575" cy="156" r="2.8" fill="#E53E3E"/>
+  <circle cx="569" cy="162" r="2.8" fill="#E53E3E"/>
+  <circle cx="581" cy="162" r="2.8" fill="#E53E3E"/>
+  <text x="575" y="205" text-anchor="middle" font-size="12" fill="#4A5568">2. Alignment (112×112)</text>
+
+  <line x1="620" y1="150" x2="750" y2="150" stroke="#4A5568" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <rect x="750" y="118" width="150" height="64" rx="8" fill="#EBF8FF" stroke="#3182CE" stroke-width="2"/>
+  <g fill="#3182CE">
+    <rect x="762" y="150" width="8" height="20" rx="2"/>
+    <rect x="776" y="135" width="8" height="35" rx="2"/>
+    <rect x="790" y="145" width="8" height="25" rx="2"/>
+    <rect x="804" y="128" width="8" height="42" rx="2"/>
+    <rect x="818" y="155" width="8" height="15" rx="2"/>
+    <rect x="832" y="140" width="8" height="30" rx="2"/>
+    <rect x="846" y="148" width="8" height="22" rx="2"/>
+    <rect x="860" y="132" width="8" height="38" rx="2"/>
+    <rect x="874" y="152" width="8" height="18" rx="2"/>
+  </g>
+  <text x="825" y="205" text-anchor="middle" font-size="12" fill="#4A5568">3. ArcFace Embedding (512-d)</text>
+
+  <line x1="900" y1="150" x2="1010" y2="285" stroke="#4A5568" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <!-- ================= ROW B (profile) ================= -->
+  <text x="110" y="415" text-anchor="middle" font-size="13" fill="#4A5568">Query Photo B</text>
+  <use href="#faceProfile" x="110" y="470"/>
+  <text x="110" y="525" text-anchor="middle" font-size="12" fill="#718096">(half-profile)</text>
+
+  <line x1="152" y1="470" x2="290" y2="470" stroke="#4A5568" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <rect x="300" y="430" width="90" height="90" rx="10" fill="#FFF7ED" stroke="#DD6B20" stroke-width="2" stroke-dasharray="6,4"/>
+  <use href="#faceProfile" transform="translate(345,475) scale(0.55)"/>
+  <path d="M305,440 L305,433 L312,433 M383,433 L390,433 L390,440 M305,510 L305,517 L312,517 M383,517 L390,517 L390,510" stroke="#DD6B20" stroke-width="2.5" fill="none"/>
+  <text x="345" y="545" text-anchor="middle" font-size="12" fill="#4A5568">1. Face Detection</text>
+
+  <line x1="400" y1="470" x2="530" y2="470" stroke="#4A5568" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <use href="#faceProfile" transform="translate(575,470) scale(0.6)"/>
+  <circle cx="573" cy="465" r="2.8" fill="#E53E3E"/>
+  <circle cx="588" cy="470" r="2.8" fill="#E53E3E"/>
+  <circle cx="580" cy="478" r="2.8" fill="#E53E3E"/>
+  <circle cx="571" cy="482" r="2.8" fill="#E53E3E"/>
+  <circle cx="584" cy="486" r="2.8" fill="#E53E3E"/>
+  <text x="575" y="525" text-anchor="middle" font-size="12" fill="#4A5568">2. Alignment (112×112)</text>
+
+  <line x1="620" y1="470" x2="750" y2="470" stroke="#4A5568" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <rect x="750" y="438" width="150" height="64" rx="8" fill="#EBF8FF" stroke="#3182CE" stroke-width="2"/>
+  <g fill="#3182CE">
+    <rect x="762" y="465" width="8" height="25" rx="2"/>
+    <rect x="776" y="450" width="8" height="40" rx="2"/>
+    <rect x="790" y="472" width="8" height="18" rx="2"/>
+    <rect x="804" y="445" width="8" height="45" rx="2"/>
+    <rect x="818" y="468" width="8" height="22" rx="2"/>
+    <rect x="832" y="455" width="8" height="35" rx="2"/>
+    <rect x="846" y="475" width="8" height="15" rx="2"/>
+    <rect x="860" y="448" width="8" height="42" rx="2"/>
+    <rect x="874" y="470" width="8" height="20" rx="2"/>
+  </g>
+  <text x="825" y="525" text-anchor="middle" font-size="12" fill="#4A5568">3. ArcFace Embedding (512-d)</text>
+
+  <line x1="900" y1="470" x2="1010" y2="335" stroke="#4A5568" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <!-- ================= COMPARE NODE ================= -->
+  <circle cx="1060" cy="310" r="58" fill="#FAF5FF" stroke="#805AD5" stroke-width="2.5"/>
+  <text x="1060" y="300" text-anchor="middle" font-size="13" font-weight="700" fill="#553C9A">cos θ</text>
+  <text x="1060" y="320" text-anchor="middle" font-size="16" font-weight="700" fill="#553C9A">0.719</text>
+  <text x="1060" y="382" text-anchor="middle" font-size="12" fill="#4A5568">4. Cosine Similarity</text>
+
+  <line x1="1118" y1="310" x2="1210" y2="310" stroke="#4A5568" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <!-- ================= DECISION BOX ================= -->
+  <rect x="1215" y="240" width="165" height="140" rx="12" fill="#F0FFF4" stroke="#38A169" stroke-width="2.5"/>
+  <circle cx="1297" cy="278" r="18" fill="#38A169"/>
+  <path d="M1288,278 L1295,285 L1308,270" stroke="white" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="1297" y="315" text-anchor="middle" font-size="13" font-weight="700" fill="#276749">SAME PERSON</text>
+  <text x="1297" y="335" text-anchor="middle" font-size="11" fill="#4A5568">score 0.719 &gt; 0.44</text>
+  <text x="1297" y="350" text-anchor="middle" font-size="10" fill="#718096">(frozen threshold, Step 6)</text>
+  <text x="1297" y="405" text-anchor="middle" font-size="12" fill="#4A5568">5. Verification Decision</text>
+
+  <text x="700" y="620" text-anchor="middle" font-size="11" fill="#A0AEC0">Faces are simple illustrative icons — no FEI Face Database images are reproduced here.</text>
 </svg>
