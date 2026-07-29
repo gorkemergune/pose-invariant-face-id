@@ -28,6 +28,21 @@ reference material and are not part of the pipeline.
 terms (research/academic use); raw and processed images are **not** redistributed
 in this repository (see `.gitignore`).
 
+### Detection coverage note
+
+Of the 2800 images, **2782 (99.4%) were successfully detected and aligned**;
+**18 could not be detected**, even after a fallback pass with a larger detector
+input (1024) and a lowered detection threshold (0.1). All 18 are the image
+index `-14`, which in FEI is a **frontal shot under a dark illumination
+condition**. For these 18 subjects the frame is effectively black (mean pixel
+brightness ≈ 2/255, versus ≈ 72/255 for the other 182 `-14` images), so no face
+is visible for RetinaFace to localize — this is an **illumination** failure, not
+a pose failure. Because the affected images are frontal, their exclusion very
+slightly reduces coverage of the low-light *frontal* condition; it does **not**
+bias the profile–profile evaluation bin. The affected subjects are 37, 38, 50,
+63–65, and 107–118. All 18 remain logged as `status = no_face` in
+`results/preprocess_log.csv`.
+
 ## Project structure
 
 ```
