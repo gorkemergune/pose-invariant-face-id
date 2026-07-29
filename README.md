@@ -16,6 +16,17 @@ Only the `originalimages_*` archives (the full pose range) are used for the main
 pipeline. The `frontalimages_*` and `*_averagefaceimages` archives are optional
 reference material and are not part of the pipeline.
 
+The 14 images per subject follow a fixed capture pattern: images 1–10 sweep the
+head from one profile to the other, while images 11–14 are near-frontal
+expression/illumination shots. Our estimated yaw recovers this structure
+cleanly:
+
+![FEI pose structure](results/dataset_pose_structure.png)
+
+> No FEI face images (raw or aligned) are committed to this repository, per the
+> dataset license. All figures shown here are aggregate, non-identifying plots
+> derived from the pipeline outputs.
+
 > **Citation.** FEI Face Database, Artificial Intelligence Laboratory of FEI,
 > São Bernardo do Campo, São Paulo, Brazil.
 > Thomaz, C. E. and Giraldi, G. A., *A new ranking method for principal
@@ -73,6 +84,21 @@ pip install -r requirements.txt
 
 ## Pipeline
 
+```mermaid
+flowchart LR
+    A["Raw FEI images<br/>2800"] --> B["RetinaFace detect<br/>+ 112x112 align"]
+    B --> C["Aligned crops<br/>2782"]
+    C --> D["Yaw estimation<br/>frontal / half / profile"]
+    C --> E["ArcFace embed<br/>512-d"]
+    D --> F["Identity-disjoint split<br/>160 / 20 / 20"]
+    F --> G["Verification pairs<br/>pos + pose-balanced neg"]
+    E --> H["Evaluate<br/>ROC / EER / TAR@FAR"]
+    G --> H
+    E --> I["UMAP / t-SNE<br/>+ FAISS retrieval"]
+    H --> J["Results + Gradio demo"]
+    I --> J
+```
+
 1. **Data prep** — extract `originalimages_part1-4.zip` into `data/raw/`
    (200×14 = 2800 images verified).
 2. **Preprocess** — `python src/preprocess.py`: RetinaFace detection + 5-point
@@ -123,6 +149,8 @@ ArcFace's pose robustness on FEI rather than a training experiment.
   **half-profile** (`20–60°`), **profile** (`>60°`). Bin sizes: 1289 / 1159 /
   334. The mean estimated yaw is monotonic with the FEI capture index
   (image 1 ≈ −65°, images 5–6 ≈ 0°, image 10 ≈ +68°), validating the estimator.
+
+  ![Pose-bin distribution](results/pose_bin_distribution.png)
 - **Split.** 200 subjects → **160 train / 20 val / 20 test** identities (fixed
   seed 42), identity-disjoint (verified: zero subject overlap, no pair crosses a
   split boundary).
@@ -212,32 +240,14 @@ Both protocols saturate at 1.000. The cross-pose result is the stronger
 statement: even in the hardest direction (profile → frontal gallery), every
 query retrieves its same-identity match at rank 1.
 
-### Demo
+### Demo & attribution
 
-```bash
-python app.py
-```
+The interactive same-person demo is described in the [Demo](#demo) section
+above (`python app.py`). Verified examples: same person (frontal vs profile) →
+cosine 0.719 → SAME; different people → cosine 0.098 → DIFFERENT.
 
-Upload two photos → each is detected, aligned, and embedded with ArcFace → the
-cosine similarity is compared against the frozen **0.44** threshold, and the app
-reports "same / different person", the score, and the margin. Verified examples:
-same person (frontal vs profile) → cosine 0.719 → SAME; different people →
-cosine 0.098 → DIFFERENT.
-
-### Dataset attribution & license
-
-This project uses the **FEI Face Database** (Artificial Intelligence Laboratory
-of FEI, São Bernardo do Campo, São Paulo, Brazil). Please cite:
-
-> Thomaz, C. E. and Giraldi, G. A., *A new ranking method for principal
-> components analysis and its application to face image analysis*, Image and
-> Vision Computing, 28(6):902-913, 2010.
-> Project page: https://fei.edu.br/~cet/facedatabase.html
-
-The repository `LICENSE` (Apache 2.0) applies to the **code only**. The FEI
-images are governed by the FEI Face Database's own research/academic terms and
-are **not** redistributed here — raw images, aligned crops, and embeddings are
-all git-ignored.
+Dataset citation and the code-vs-images licensing note are in the
+[Dataset](#dataset) section above.
 
 ### Limitations
 
