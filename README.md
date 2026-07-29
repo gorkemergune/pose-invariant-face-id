@@ -5,6 +5,10 @@ verification system built on pretrained ArcFace embeddings, with an analysis of
 how verification accuracy degrades as head pose (yaw) moves from frontal to
 profile.
 
+![Pipeline overview](results/pipeline_diagram.svg)
+
+> Faces are simple illustrative icons — no FEI Face Database images are reproduced here.
+
 ## Dataset
 
 This project uses the **FEI Face Database** — 200 subjects × 14 images = 2800
@@ -84,20 +88,7 @@ pip install -r requirements.txt
 
 ## Pipeline
 
-```mermaid
-flowchart LR
-    A["Raw FEI images<br/>2800"] --> B["RetinaFace detect<br/>+ 112x112 align"]
-    B --> C["Aligned crops<br/>2782"]
-    C --> D["Yaw estimation<br/>frontal / half / profile"]
-    C --> E["ArcFace embed<br/>512-d"]
-    D --> F["Identity-disjoint split<br/>160 / 20 / 20"]
-    F --> G["Verification pairs<br/>pos + pose-balanced neg"]
-    E --> H["Evaluate<br/>ROC / EER / TAR@FAR"]
-    G --> H
-    E --> I["UMAP / t-SNE<br/>+ FAISS retrieval"]
-    H --> J["Results + Gradio demo"]
-    I --> J
-```
+(See the pipeline overview diagram at the top of this README.)
 
 1. **Data prep** — extract `originalimages_part1-4.zip` into `data/raw/`
    (200×14 = 2800 images verified).
@@ -168,17 +159,22 @@ ArcFace's pose robustness on FEI rather than a training experiment.
 ### Verification (Step 6, test split, frozen val threshold = 0.44)
 
 Overall: **AUC = 1.000, EER = 0.000, TAR@FAR=1e-3 = 0.999, accuracy = 1.000.**
+AUC (1.000) and EER (0.000) are identical in every pose bin, so the per-bin
+table below drops those constant columns and keeps only the columns that vary —
+the genuine-pair margin (`mean pos. cosine`) and the single dip in `TAR@1e-3`.
 
-| Pose-bin pair | n_pos | AUC | EER | TAR@1e-3 | acc@1e-2 | mean pos. cosine |
-|---|---|---|---|---|---|---|
-| frontal / frontal | 322 | 1.000 | 0.000 | 1.000 | 1.000 | **0.867** |
-| half-profile / half-profile | 278 | 1.000 | 0.000 | 1.000 | 1.000 | 0.856 |
-| frontal / half-profile | 699 | 1.000 | 0.000 | 1.000 | 1.000 | 0.818 |
-| half-profile / profile | 228 | 1.000 | 0.000 | 1.000 | 1.000 | 0.760 |
-| profile / profile | 21 | 1.000 | 0.000 | 1.000 | 1.000 | 0.751 |
-| frontal / profile | 246 | 1.000 | 0.000 | **0.996** | 0.998 | **0.702** |
+| Pose-bin pair               | n_pos | TAR@1e-3  | acc@1e-2 | mean pos. cosine |
+| --------------------------- | ----- | --------- | -------- | ---------------- |
+| frontal / frontal           | 322   | 1.000     | 1.000    | **0.867**        |
+| half-profile / half-profile | 278   | 1.000     | 1.000    | 0.856            |
+| frontal / half-profile      | 699   | 1.000     | 1.000    | 0.818            |
+| half-profile / profile      | 228   | 1.000     | 1.000    | 0.760            |
+| profile / profile           | 21    | 1.000     | 1.000    | 0.751            |
+| frontal / profile           | 246   | **0.996** | 0.998    | **0.702**        |
 
-profile/profile AUC 95% CI (1000× bootstrap): **[1.000, 1.000]**.
+profile/profile AUC 95% CI (1000× bootstrap): **[1.000, 1.000]** — degenerate
+(all 21 positive pairs correct), so it reflects small sample size, not a
+well-estimated interval.
 
 ![ROC by pose-bin](results/roc_curve.png)
 
@@ -200,9 +196,9 @@ margin without inflating impostor scores.
 
 Silhouette score (cosine, on the raw 512-d vectors; higher = better separated):
 
-| Grouping | Silhouette |
-|---|---|
-| by **identity** | **0.777** |
+| Grouping        | Silhouette |
+| --------------- | ---------- |
+| by **identity** | **0.777**  |
 | by **pose_bin** | **−0.006** |
 
 **The embedding encodes identity dominantly and pose barely at all.** The 20
@@ -218,21 +214,21 @@ the pose-invariant verification and retrieval results.
 **Same-pose pool** — each test image queried against all other test images;
 correct if a same-identity image is in the top-k:
 
-| Query pose | n_queries | top-1 | top-5 |
-|---|---|---|---|
-| frontal | 123 | 1.000 | 1.000 |
-| half-profile | 115 | 1.000 | 1.000 |
-| profile | 40 | 1.000 | 1.000 |
+| Query pose   | n_queries | top-1 | top-5 |
+| ------------ | --------- | ----- | ----- |
+| frontal      | 123       | 1.000 | 1.000 |
+| half-profile | 115       | 1.000 | 1.000 |
+| profile      | 40        | 1.000 | 1.000 |
 
 **Cross-pose (stricter)** — gallery = **frontal-only** test images; queries =
 off-frontal images (a profile query must match a *frontal* image of the same
 person):
 
-| Query pose | n_queries | top-1 | top-5 |
-|---|---|---|---|
-| half-profile | 115 | 1.000 | 1.000 |
-| profile | 40 | 1.000 | 1.000 |
-| all-nonfrontal | 155 | 1.000 | 1.000 |
+| Query pose     | n_queries | top-1 | top-5 |
+| -------------- | --------- | ----- | ----- |
+| half-profile   | 115       | 1.000 | 1.000 |
+| profile        | 40        | 1.000 | 1.000 |
+| all-nonfrontal | 155       | 1.000 | 1.000 |
 
 ![Cross-pose retrieval](results/retrieval_crosspose.png)
 
