@@ -1,0 +1,5 @@
+scope,n_queries,top1_acc,top5_acc
+overall,278,1.0,1.0
+frontal,123,1.0,1.0
+half-profile,115,1.0,1.0
+profile,40,1.0,1.0
