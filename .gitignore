@@ -1,0 +1,25 @@
+# Data & archives — never commit raw/processed face images or zip files
+data/
+*.zip
+
+# Model weights
+models/*.pth
+models/*.pt
+models/*.onnx
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
