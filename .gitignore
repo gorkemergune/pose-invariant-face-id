@@ -26,3 +26,5 @@ results/*_run.log
 Thumbs.db
 .vscode/
 .idea/
+p.md
+prompt.md
