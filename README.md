@@ -9,39 +9,20 @@ profile.
 
 > Faces are simple illustrative icons — no FEI Face Database images are reproduced here.
 
-## Dataset
+## Data
 
-This project uses the **FEI Face Database** — 200 subjects × 14 images = 2800
-color images, captured across roughly 180° of head rotation (frontal, half
-profile, profile), with some illumination variation. Each file is named
-`<subjectID>-<imageNum>.jpg` (subject IDs 1–200, image numbers 01–14).
+The experiments use the **FEI Face Database**, a controlled studio face dataset
+of 200 subjects imaged across ~180° of head rotation (14 images per subject: a
+left→right profile sweep plus near-frontal expression/illumination shots). Raw
+and processed images are **not** redistributed here (see `.gitignore`); only
+derived aggregate results and figures are included.
 
-Only the `originalimages_*` archives (the full pose range) are used for the main
-pipeline. The `frontalimages_*` and `*_averagefaceimages` archives are optional
-reference material and are not part of the pipeline.
+**Citation.** Thomaz, C. E. and Giraldi, G. A., *A new ranking method for
+principal components analysis and its application to face image analysis*,
+Image and Vision Computing, 28(6):902–913, 2010.
 
-The 14 images per subject follow a fixed capture pattern: images 1–10 sweep the
-head from one profile to the other, while images 11–14 are near-frontal
-expression/illumination shots. Our estimated yaw recovers this structure
-cleanly:
-
-![FEI pose structure](results/dataset_pose_structure.png)
-
-> No FEI face images (raw or aligned) are committed to this repository, per the
-> dataset license. All figures shown here are aggregate, non-identifying plots
-> derived from the pipeline outputs.
-
-> **Citation.** FEI Face Database, Artificial Intelligence Laboratory of FEI,
-> São Bernardo do Campo, São Paulo, Brazil.
-> Thomaz, C. E. and Giraldi, G. A., *A new ranking method for principal
-> components analysis and its application to face image analysis*, Image and
-> Vision Computing, 28(6):902-913, 2010.
-> Project page: https://fei.edu.br/~cet/facedatabase.html
-
-**Licensing note.** The `LICENSE` file in this repo (Apache 2.0) covers the
-*code*. The FEI images themselves are governed by the FEI Face Database's own
-terms (research/academic use); raw and processed images are **not** redistributed
-in this repository (see `.gitignore`).
+**License.** The repository `LICENSE` (Apache 2.0) covers the **code only**; the
+face images are governed by the dataset's own research/academic terms.
 
 ### Detection coverage note
 
@@ -58,65 +39,19 @@ bias the profile–profile evaluation bin. The affected subjects are 37, 38, 50,
 63–65, and 107–118. All 18 remain logged as `status = no_face` in
 `results/preprocess_log.csv`.
 
-## Project structure
-
-```
-data/
-  raw/            # extracted FEI original images (git-ignored)
-  processed/      # aligned faces, embeddings, labels, splits (git-ignored)
-src/
-  preprocess.py       # face detection + landmark alignment (112x112)
-  pose_estimation.py  # per-image yaw estimation + pose binning
-  split.py            # identity-disjoint train/val/test split + pairs
-  embed.py            # ArcFace (buffalo_l) 512-d embedding extraction
-  evaluate.py         # ROC/AUC, EER, TAR@FAR, pose-binned breakdown
-  visualize.py        # UMAP/t-SNE embedding scatter
-  retrieval.py        # (optional) FAISS retrieval demo
-notebooks/
-results/          # logs, tables, plots
-models/           # cached / fine-tuned weights (git-ignored)
-app.py            # (optional) Gradio same-person demo
-```
-
 ## Setup
 
 ```bash
-python -m venv .venv
-# Windows: .venv\Scripts\activate   |   *nix: source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Pipeline
-
-(See the pipeline overview diagram at the top of this README.)
-
-1. **Data prep** — extract `originalimages_part1-4.zip` into `data/raw/`
-   (200×14 = 2800 images verified).
-2. **Preprocess** — `python src/preprocess.py`: RetinaFace detection + 5-point
-   landmarks, aligned to 112×112 (ArcFace standard), saved to
-   `data/processed/aligned/`. Failures logged to `results/preprocess_log.csv`.
-3. **Pose labeling** — per-image yaw → bins: frontal `<20°`, half `20–60°`,
-   profile `>60°`.
-4. **Identity-disjoint split** — ~160 train / 20 val / 20 test subjects.
-5. **Embeddings** — pretrained ArcFace (`buffalo_l`), 512-d.
-6. **Evaluation** — verification metrics, overall and per pose-bin pair.
-7. **Visualization** — UMAP/t-SNE of embeddings by identity and pose.
-8. **Retrieval** — `python src/retrieval.py`: FAISS top-1/top-5, same-pose pool
-   and a cross-pose (frontal-only gallery) variant.
-
 ## Demo
 
-An interactive Gradio app compares two uploaded photos and reports whether they
-are the same person, using the cosine-similarity threshold (0.44) frozen from
-the validation split in Step 6.
-
-```bash
-python app.py
-```
-
-Then open the printed local URL. Each photo is detected + aligned, embedded with
-ArcFace, and the two embeddings are compared by cosine similarity; the result
-shows the verdict, the score, and its margin to the threshold.
+`python app.py` launches a Gradio app: upload two photos and it reports
+same/different person from the cosine similarity against the frozen 0.44
+threshold, with the score and its margin. For example, a frontal and a profile
+shot of one person score 0.719 → SAME, while two different people score
+0.098 → DIFFERENT.
 
 ## Results
 
@@ -156,21 +91,21 @@ ArcFace's pose robustness on FEI rather than a training experiment.
   threshold-free. The sparse profile–profile bin gets a 1000-resample bootstrap
   95% CI on AUC.
 
-### Verification (Step 6, test split, frozen val threshold = 0.44)
+### Verification (test split, frozen threshold = 0.44)
 
 Overall: **AUC = 1.000, EER = 0.000, TAR@FAR=1e-3 = 0.999, accuracy = 1.000.**
 AUC (1.000) and EER (0.000) are identical in every pose bin, so the per-bin
 table below drops those constant columns and keeps only the columns that vary —
 the genuine-pair margin (`mean pos. cosine`) and the single dip in `TAR@1e-3`.
 
-| Pose-bin pair               | n_pos | TAR@1e-3  | acc@1e-2 | mean pos. cosine |
-| --------------------------- | ----- | --------- | -------- | ---------------- |
-| frontal / frontal           | 322   | 1.000     | 1.000    | **0.867**        |
-| half-profile / half-profile | 278   | 1.000     | 1.000    | 0.856            |
-| frontal / half-profile      | 699   | 1.000     | 1.000    | 0.818            |
-| half-profile / profile      | 228   | 1.000     | 1.000    | 0.760            |
-| profile / profile           | 21    | 1.000     | 1.000    | 0.751            |
-| frontal / profile           | 246   | **0.996** | 0.998    | **0.702**        |
+| Pose-bin pair               | n_pos | TAR@1e-3        | acc@1e-2 | mean pos. cosine |
+| --------------------------- | ----- | --------------- | -------- | ---------------- |
+| frontal / frontal           | 322   | 1.000           | 1.000    | **0.867**  |
+| half-profile / half-profile | 278   | 1.000           | 1.000    | 0.856            |
+| frontal / half-profile      | 699   | 1.000           | 1.000    | 0.818            |
+| half-profile / profile      | 228   | 1.000           | 1.000    | 0.760            |
+| profile / profile           | 21    | 1.000           | 1.000    | 0.751            |
+| frontal / profile           | 246   | **0.996** | 0.998    | **0.702**  |
 
 profile/profile AUC 95% CI (1000× bootstrap): **[1.000, 1.000]** — degenerate
 (all 21 positive pairs correct), so it reflects small sample size, not a
@@ -192,7 +127,7 @@ margin without inflating impostor scores.
 
 ![Similarity by pose-bin](results/similarity_by_pose.png)
 
-### Embedding geometry (Step 7, UMAP / t-SNE on test embeddings)
+### Embedding geometry (UMAP / t-SNE, test embeddings)
 
 Silhouette score (cosine, on the raw 512-d vectors; higher = better separated):
 
@@ -209,7 +144,7 @@ the pose-invariant verification and retrieval results.
 
 ![UMAP embeddings](results/embedding_umap.png)
 
-### Retrieval (Step 8, test split)
+### Retrieval (test split)
 
 **Same-pose pool** — each test image queried against all other test images;
 correct if a same-identity image is in the top-k:
@@ -235,15 +170,6 @@ person):
 Both protocols saturate at 1.000. The cross-pose result is the stronger
 statement: even in the hardest direction (profile → frontal gallery), every
 query retrieves its same-identity match at rank 1.
-
-### Demo & attribution
-
-The interactive same-person demo is described in the [Demo](#demo) section
-above (`python app.py`). Verified examples: same person (frontal vs profile) →
-cosine 0.719 → SAME; different people → cosine 0.098 → DIFFERENT.
-
-Dataset citation and the code-vs-images licensing note are in the
-[Dataset](#dataset) section above.
 
 ### Limitations
 
